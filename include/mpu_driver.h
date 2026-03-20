@@ -10,7 +10,10 @@ typedef struct {
 } gyro_out_t;
 
 void set_registers(void);
+
 gyro_out_t get_gyro_values(void);
+
+uint16_t reg_uniter(uint8_t reg_H, uint8_t reg_L);
 
 #endif
 
