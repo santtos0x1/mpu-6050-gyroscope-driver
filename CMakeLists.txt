@@ -35,7 +35,10 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(mpu_gyroscope_driver main.c src/mpu_driver.c )
+add_executable(mpu_gyroscope_driver 
+               main.c 
+               src/mpu6050/mpu_driver.c
+               src/mpu6050/reg_uniter.c )
 
 pico_set_program_name(mpu_gyroscope_driver "mpu_gyroscope_driver")
 pico_set_program_version(mpu_gyroscope_driver "0.1")
