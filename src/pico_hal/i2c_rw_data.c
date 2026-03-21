@@ -2,23 +2,30 @@
 #include "i2c_rw_data.h"
 #include "registers.h"
 
-#define IO_BANK0_BIT (1 << 5)
-#define PADS_BANK0_BIT (1 << 8)
-#define I2C0_BIT (1 << 3)
-#define FAST_MODE (2 << 1)
-#define MASTER_MODE (1 << 0)
-#define SLAVE_MODE_DISABLE (1 << 6)
-#define RESETSREG_BIT_SET ((volatile uint32_t *)(RESETS_BASE))
-#define GPIO14_CTRL (*(volatile uint32_t *)(IO_BANK0_BASE + 0x074))
-#define GPIO15_CTRL (*(volatile uint32_t *)(IO_BANK0_BASE + 0x07C))
-#define CLK_PERI_CTRL (*(volatile uint32_t *)(CLOCKS_BASE + 0x48))
-#define IC_ENABLE (*(volatile uint32_t *)(I2C0_BASE + 0x6c))
-#define IC_FS_SCL_HCNT (*(volatile uint32_t *)(I2C0_BASE + 0x1c))
-#define IC_FS_SCL_LCNT (*(volatile uint32_t *)(I2C0_BASE + 0x20))
-#define IC_CON (*(volatile uint32_t *)(I2C0_BASE + 0x00))
-#define IC_SAR (*(volatile uint32_t *)(I2C0_BASE + 0x08))
-#define IC_DATA_CMD (*(volatile uint32_t *)(I2C0_BASE + 0x10))
-#define IC_STATUS (*(volatile uint32_t *)(I2C0_BASE + 0x70))
+// --- Reset and Peripheral Control Bits ---
+#define IO_BANK0_BIT (1 << 5)       // Resets or enables Digital IO (GPIOs)
+#define PADS_BANK0_BIT (1 << 8)     // Resets or enables physical pin controls (Pull-ups/downs)
+#define I2C0_BIT (1 << 3)           // Resets or enables the I2C0 hardware block
+
+// --- IC_CON Register Configuration (I2C Control) ---
+#define FAST_MODE (2 << 1)          // Sets I2C speed to 400kHz (bits 2:1)
+#define MASTER_MODE (1 << 0)        // Sets RP2040 as the Master of the bus (bit 0)
+#define SLAVE_MODE_DISABLE (1 << 6) // Disables Slave mode to prevent bus conflicts (bit 6)
+
+// --- System and Hardware Control Registers ---
+#define RESETSREG_BIT_SET ((volatile uint32_t *)(RESETS_BASE)) // Register to take peripherals out of reset
+#define GPIO14_CTRL (*(volatile uint32_t *)(IO_BANK0_BASE + 0x074)) // Configures GPIO14 for I2C SDA function
+#define GPIO15_CTRL (*(volatile uint32_t *)(IO_BANK0_BASE + 0x07C)) // Configures GPIO15 for I2C SCL function
+#define CLK_PERI_CTRL (*(volatile uint32_t *)(CLOCKS_BASE + 0x48))  // Enables the clock signal for peripherals
+
+// --- I2C0 Specific Registers ---
+#define IC_ENABLE (*(volatile uint32_t *)(I2C0_BASE + 0x6c))    // Main switch: Enable (1) or Disable (0) I2C
+#define IC_FS_SCL_HCNT (*(volatile uint32_t *)(I2C0_BASE + 0x1c)) // Clock cycles for SCL HIGH level in Fast Mode
+#define IC_FS_SCL_LCNT (*(volatile uint32_t *)(I2C0_BASE + 0x20)) // Clock cycles for SCL LOW level in Fast Mode
+#define IC_CON (*(volatile uint32_t *)(I2C0_BASE + 0x00))       // Main configuration register (Mode, Speed, etc.)
+#define IC_SAR (*(volatile uint32_t *)(I2C0_BASE + 0x08))       // Slave Address: The address of the target sensor (0x68)
+#define IC_DATA_CMD (*(volatile uint32_t *)(I2C0_BASE + 0x10))  // Data buffer: Used to send commands and read received bytes
+#define IC_STATUS (*(volatile uint32_t *)(I2C0_BASE + 0x70))    // Hardware status: Shows if the buffer is empty or full
 
 void rp2040_setup_hwr(void)
 {
