@@ -45,8 +45,9 @@ typedef struct {
     int16_t y;
     int16_t z;
 } gyro_data_t;
+```
 
-## Example
+## Usage example
 
 ```c
 #include <stdio.h>
