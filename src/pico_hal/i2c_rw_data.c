@@ -11,6 +11,7 @@
 #define FAST_MODE (2 << 1)          // Sets I2C speed to 400kHz (bits 2:1)
 #define MASTER_MODE (1 << 0)        // Sets RP2040 as the Master of the bus (bit 0)
 #define SLAVE_MODE_DISABLE (1 << 6) // Disables Slave mode to prevent bus conflicts (bit 6)
+#define RFNE_BIT (1 << 3)
 
 // --- System and Hardware Control Registers ---
 #define RESETSREG_BIT_SET ((volatile uint32_t *)(RESETS_BASE)) // Register to take peripherals out of reset
@@ -56,7 +57,7 @@ void rp2040_setup_hwr(void)
     IC_FS_SCL_LCNT = 192;
 
     // I2C configuration
-    IC_CON = (FAST_MODE | MASTER_MODE | SLAVE_MODE_DISABLE);
+    IC_CON |= (FAST_MODE | MASTER_MODE | SLAVE_MODE_DISABLE);
 
     // Sets slave address register to 0x68 (MPU-6050 default address)
     IC_SAR = 0x68;
@@ -74,8 +75,10 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
     IC_DATA_CMD = 0x100;
     
     // Waits receive 1 byte of data from sensor
-    while(!(IC_STATUS & (1 << 3)));
+    while(!(IC_STATUS & RFNE_BIT));
 
-    // Returns 1 byte of data
-    return (uint8_t)(IC_DATA_CMD & 0xFF);
+    // Gets 1 byte of data by setting the first 8 bits to 1 and the remnant to 0, working as a bit filter
+    uint8_t reg_data = (uint8_t)(IC_DATA_CMD & 0xFF);
+
+    return reg_data;
 }

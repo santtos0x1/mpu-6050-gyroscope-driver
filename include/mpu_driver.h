@@ -18,7 +18,7 @@ typedef struct {
     uint8_t gyro_z_out_l;
 } gyro_axis_hl_v;
 
-void set_registers(void);
+void setup_driver_registers(void);
 
 gyro_out_t get_gyro_values(void);
 

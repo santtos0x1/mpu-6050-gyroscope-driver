@@ -21,7 +21,7 @@
 #define W_CONFIGURATION (*(volatile uint8_t *)(CONFIGURATION_REG))  // Direct access to write General Configuration
 #define W_GYRO_CONFIGURATION (*(volatile uint8_t *)(GYRO_CONFIGURATION_REG)) // Direct access to write Gyroscope Range
 
-void set_registers(void)
+void setup_driver_registers(void)
 {
     // Waits until find sensor
     while(!(*R_WHOAMI_REG & WHOAMI_REG_DEFAULT_V_BIT)){};
