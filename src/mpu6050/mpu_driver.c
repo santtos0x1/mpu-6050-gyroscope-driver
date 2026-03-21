@@ -2,6 +2,7 @@
 #include "registers.h"
 #include "string.h"
 #include "reg_uniter.h"
+#include "i2c_rw_data.h"
 
 /* --- Configuration Bits & Values --- */
 
@@ -46,24 +47,6 @@
 // Access to write gyro scale config
 #define W_GYRO_CONFIGURATION (*(volatile uint8_t *)(GYRO_CONFIGURATION_REG))
 
-// Pointer to Gyro X-axis High byte
-#define R_GYRO_XOUT_H ((volatile uint8_t *)(GYRO_REG_XOUT_H))
-
-// Pointer to Gyro X-axis Low byte
-#define R_GYRO_XOUT_L ((volatile uint8_t *)(GYRO_REG_XOUT_L))
-
-// Pointer to Gyro Y-axis High byte
-#define R_GYRO_YOUT_H ((volatile uint8_t *)(GYRO_REG_YOUT_H))
-
-// Pointer to Gyro Y-axis Low byte
-#define R_GYRO_YOUT_L ((volatile uint8_t *)(GYRO_REG_YOUT_L))
-
-// Pointer to Gyro Z-axis High byte
-#define R_GYRO_ZOUT_H ((volatile uint8_t *)(GYRO_REG_ZOUT_H))
-
-// Pointer to Gyro Z-axis Low byte
-#define R_GYRO_ZOUT_L ((volatile uint8_t *)(GYRO_REG_ZOUT_L))
-
 void set_registers(void)
 {
     // Waits until find sensor
@@ -90,22 +73,27 @@ void set_registers(void)
 
 gyro_out_t get_gyro_values(void)
 {
-    gyro_out_t g_data = {0};
+    uint16_t gyro_xout, gyro_yout, gyro_zout;
+    gyro_axis_hl_v gyro_axis;
+    gyro_out_t g_data;
 
-    // Clears struct before gets a new sample data
-    memset(&g_data, 0, sizeof(g_data));
+    gyro_axis.gyro_x_out_h = GYRO_REG_XOUT_H;
+    gyro_axis.gyro_x_out_l = GYRO_REG_XOUT_L;
+    gyro_axis.gyro_y_out_h = GYRO_REG_YOUT_H;
+    gyro_axis.gyro_y_out_l = GYRO_REG_YOUT_L;
+    gyro_axis.gyro_z_out_h = GYRO_REG_ZOUT_H;
+    gyro_axis.gyro_z_out_l = GYRO_REG_ZOUT_L;
 
-    if(*R_INTR_ENABLE_STATUS & DATA_RDY_EN_BIT){
+    if(*R_INTR_ENABLE_STATUS & DATA_RDY_EN_BIT){        
         // Unites two 8-bits registers in one of 16-bit for each axis
-        uint16_t gyro_xout = reg_uniter_8to16(*R_GYRO_XOUT_H, *R_GYRO_XOUT_L);
-        uint16_t gyro_yout = reg_uniter_8to16(*R_GYRO_YOUT_H, *R_GYRO_YOUT_L);
-        uint16_t gyro_zout = reg_uniter_8to16(*R_GYRO_ZOUT_H, *R_GYRO_ZOUT_L);
-        
-        // Sets value to struct
-        g_data.GYRO_XOUT_V |= gyro_xout;
-        g_data.GYRO_YOUT_V |= gyro_yout;
-        g_data.GYRO_ZOUT_V |= gyro_zout;
+        gyro_xout = reg_uniter_8to16(gyro_axis.gyro_x_out_h, gyro_axis.gyro_x_out_l);
+        gyro_yout = reg_uniter_8to16(gyro_axis.gyro_y_out_h, gyro_axis.gyro_y_out_l);
+        gyro_zout = reg_uniter_8to16(gyro_axis.gyro_z_out_h, gyro_axis.gyro_z_out_l);
     }
+
+    g_data.GYRO_XOUT_V = gyro_xout;
+    g_data.GYRO_YOUT_V = gyro_yout;
+    g_data.GYRO_ZOUT_V = gyro_zout;
 
     return g_data;
 }

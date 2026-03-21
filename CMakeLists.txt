@@ -38,7 +38,8 @@ pico_sdk_init()
 add_executable(mpu_gyroscope_driver 
                main.c 
                src/mpu6050/mpu_driver.c
-               src/mpu6050/reg_uniter.c )
+               src/mpu6050/reg_uniter.c
+               src/pico_hal/i2c_rw_data.c )
 
 pico_set_program_name(mpu_gyroscope_driver "mpu_gyroscope_driver")
 pico_set_program_version(mpu_gyroscope_driver "0.1")
