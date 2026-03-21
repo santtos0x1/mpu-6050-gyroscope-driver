@@ -90,10 +90,10 @@ void set_registers(void)
 
 gyro_out_t get_gyro_values(void)
 {
-    gyro_out_t g_data;
+    gyro_out_t g_data = {0};
 
     // Clears struct before gets a new sample data
-    memcpy(&g_data, 0, sizeof(g_data));
+    memset(&g_data, 0, sizeof(g_data));
 
     if(*R_INTR_ENABLE_STATUS & DATA_RDY_EN_BIT){
         // Unites two 8-bits registers in one of 16-bit for each axis
