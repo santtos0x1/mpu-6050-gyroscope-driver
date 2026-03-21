@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "mpu_driver.h"
+#include "mpu6050_gyroscope_driver.h"
 #include "i2c_rw_data.h"
 
 int main()
