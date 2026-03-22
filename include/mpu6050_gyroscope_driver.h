@@ -33,11 +33,18 @@ typedef struct {
     int8_t accel_z_out_l; // Z-axis Low byte
 } accel_axis_hl_v;
 
+typedef struct {
+    float x_angle_value;
+    float y_angle_value;
+} xy_angles_t;
+
 // Initializes and configures the MPU-6050 registers
 void setup_driver_registers(void);
 
-// Reads the raw 8-bit registers, unites them into 16-bit values, and returns the struct
+// Reads the raw 8-bit registers, unites them into 16-bit values, and sets the struct
 raw_out_t get_raw_values(void);
+
+xy_angles_t mpu6050_get_gyro_angles(void);
 
 #endif
 

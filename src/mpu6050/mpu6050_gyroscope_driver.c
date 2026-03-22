@@ -3,6 +3,7 @@
 #include "string.h"
 #include "reg_utils.h"
 #include "i2c_rw_data.h"
+#include "mpu6050_processing.h"
 
 /* --- Configuration Bits & Values --- */
 // Sets Gyroscope sensitivity range to ±500 °/s
@@ -125,4 +126,17 @@ raw_out_t get_raw_values(void)
     g_data.ACCEL_ZOUT_V = accel_zout;
 
     return g_data;
+}
+
+xy_angles_t mpu6050_get_gyro_angles(void)
+{
+    raw_out_t raw_data = {0};
+    xy_angles_t xy_angles = {0};
+
+    raw_data = get_raw_values();
+
+    xy_angles.x_angle_value = mpu6050_get_pitch_x(raw_data);
+    xy_angles.y_angle_value = mpu6050_get_roll_y(raw_data);
+
+    return xy_angles;
 }

@@ -35,18 +35,6 @@ To use this driver, connect the MPU-6050 to the RP2040 as follows:
 
 The driver implements the I2C protocol manually by managing the `IC_DATA_CMD` FIFO and monitoring the `IC_STATUS` register for **RFNE** (Receive FIFO Not Empty) flags.
 
-### Data Structure
-
-Instead of raw arrays, this driver uses a structured approach for better code clarity:
-
-```c
-typedef struct {
-    int16_t x;
-    int16_t y;
-    int16_t z;
-} gyro_data_t;
-```
-
 ## Usage example
 
 ```c
@@ -67,14 +55,10 @@ int main()
 
     while(1)
     {
-        // Initialize and gets the sensor values
-        gyro_out_t g_data = {0};
-        g_data = get_gyro_values();
+        xy_angles_t xy_angles = mpu6050_get_gyro_angles();
 
-        // Verify if X-Axis is moving
-        if (g_data.GYRO_XOUT_V > 16000 || g_data.GYRO_XOUT_V < -16000) {
-            printf("[GYRO] Motion Detected! X-Axis: %d\n", g_data.GYRO_XOUT_V);
-        }
+        printf("X-Axis: %f", xy_angles.x_angle_value);
+        printf("Y-Axis: %f", xy_angles.y_angle_value);
 
         // 10ms delay (100Hz)
         sleep_ms(10);

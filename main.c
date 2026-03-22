@@ -15,14 +15,10 @@ int main()
 
     while(1)
     {
-        // Initialize and gets the sensor values
-        raw_out_t g_data = {0};
-        g_data = get_raw_values();
-        
-        // Verify if X-Axis is moving
-        if (g_data.GYRO_XOUT_V > 16000 || g_data.GYRO_XOUT_V < -16000) {
-            printf("[GYRO] Motion Detected! X-Axis: %d\n", g_data.GYRO_XOUT_V);
-        }
+        xy_angles_t xy_angles = mpu6050_get_gyro_angles();
+
+        printf("X-Axis: %f", xy_angles.x_angle_value);
+        printf("Y-Axis: %f", xy_angles.y_angle_value);
 
         // 10ms delay (100Hz)
         sleep_ms(10);
