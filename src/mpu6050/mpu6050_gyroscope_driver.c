@@ -86,6 +86,7 @@ gyro_out_t get_gyro_values(void)
     // Check if the sensor has new data ready in the Interrupt Status register
     if(*R_INTR_ENABLE_STATUS & DATA_RDY_EN_BIT){        
         // Combine two 8-bit registers (High/Low) into a single 16-bit value for each axis
+        gyro_xout = reg_uniter_8to16(gyro_axis.gyro_x_out_h, gyro_axis.gyro_x_out_l);
         gyro_yout = reg_uniter_8to16(gyro_axis.gyro_y_out_h, gyro_axis.gyro_y_out_l);
         gyro_zout = reg_uniter_8to16(gyro_axis.gyro_z_out_h, gyro_axis.gyro_z_out_l);
     }
