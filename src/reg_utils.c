@@ -1,5 +1,5 @@
 #include "reg_utils.h"
-#include "pico_registers.h"
+#include "pico_driver/pico_registers.h"
 #include <stdint.h>
 
 // Resets done register

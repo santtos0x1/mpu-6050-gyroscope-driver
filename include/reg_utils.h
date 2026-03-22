@@ -2,7 +2,7 @@
 #define REG_UNITER
 
 #include <stdint.h>
-#include "i2c_rw_data.h"
+#include "pico_driver/i2c_rw_data.h"
 
 uint8_t is_reset_done(bit_bank_t bit_bank);
 

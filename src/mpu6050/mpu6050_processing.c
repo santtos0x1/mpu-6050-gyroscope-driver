@@ -1,7 +1,7 @@
-#include "mpu6050_processing.h"
+#include "driver/mpu6050_processing.h"
 #include <stdint.h>
-#include "pico_time.h"
-#include "mpu6050_gyroscope_driver.h"
+#include "pico_driver/pico_time.h"
+#include "driver/mpu6050_gyroscope_driver.h"
 #include <math.h>
 
 // Constants for time conversion and unit transformation
@@ -28,7 +28,7 @@ float mpu6050_get_pitch_x(raw_out_t raw_values)
 
     // Convert raw gyroscope data to degrees per second
     float gyro_x_conv = (float)raw_values.GYRO_XOUT_V / 65.5;
-    
+
     // Integrate gyroscope data to predict the new angle
     float gyro_part = angle_x + (gyro_x_conv * dt);
 
