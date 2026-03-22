@@ -16,9 +16,9 @@ int main()
     while(1)
     {
         // Initialize and gets the sensor values
-        gyro_out_t g_data = {0};
-        g_data = get_gyro_values();
-
+        raw_out_t g_data = {0};
+        g_data = get_raw_values();
+        
         // Verify if X-Axis is moving
         if (g_data.GYRO_XOUT_V > 16000 || g_data.GYRO_XOUT_V < -16000) {
             printf("[GYRO] Motion Detected! X-Axis: %d\n", g_data.GYRO_XOUT_V);

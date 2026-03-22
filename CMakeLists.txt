@@ -39,7 +39,9 @@ add_executable(mpu_gyroscope_driver
                main.c 
                src/mpu6050/mpu6050_gyroscope_driver.c
                src/pico_hal/i2c_rw_data.c
-               src/reg_utils.c )
+               src/reg_utils.c
+               src/mpu6050/mpu6050_processing.c 
+               src/pico_hal/pico_time.c)
 
 pico_set_program_name(mpu_gyroscope_driver "mpu_gyroscope_driver")
 pico_set_program_version(mpu_gyroscope_driver "0.1")

@@ -41,7 +41,9 @@
         "HCNT",
         "LCNT",
         "RESETSREG",
+        "RFNE",
         "SMPRT",
+        "TIMERAWL",
         "yout"
     ]
 }

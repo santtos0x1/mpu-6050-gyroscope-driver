@@ -6,7 +6,10 @@
 
 /* --- Configuration Bits & Values --- */
 // Sets Gyroscope sensitivity range to ±500 °/s
-#define GYRO_SENSIBILITY_500_BIT 0x08
+#define GYRO_SENSIBILITY_500_BIT (1 << 3)
+
+// Sets Accelerometer scale range to 4g
+#define ACCEL_FULL_SCALE_RANGE_4G (1 << 3)
 
 // Enables the "Data Ready" interrupt signal bit
 #define DATA_RDY_EN_BIT 0x01
@@ -45,6 +48,9 @@
 // Direct access to write Gyroscope Range
 #define W_GYRO_CONFIGURATION ((volatile uint8_t *)(GYRO_CONFIGURATION_REG))
 
+// Direct access to write Accelerometer Range
+#define W_ACCEL_CONFIGURATION ((volatile uint8_t *)(ACCEL_CONFIGURATION_REG))
+
 void setup_driver_registers(void)
 {
     // Waits until find sensor
@@ -62,6 +68,9 @@ void setup_driver_registers(void)
     // Configures gyroscope sensibility to ±500°/s
     *W_GYRO_CONFIGURATION |= GYRO_SENSIBILITY_500_BIT;
 
+    // Configures accelerometer sensibility to ±4g
+    *W_ACCEL_CONFIGURATION |= ACCEL_FULL_SCALE_RANGE_4G;
+
     // Enables interrupt when data is ready
     *W_INTR_ENABLE |= DATA_RDY_EN_BIT;
 
@@ -69,11 +78,13 @@ void setup_driver_registers(void)
     *W_SMPRT_DIV |= SMPRT_DIV_VALUE_BIT;
 }
 
-gyro_out_t get_gyro_values(void)
+raw_out_t get_raw_values(void)
 {
-    uint16_t gyro_xout, gyro_yout, gyro_zout;
+    int16_t gyro_xout, gyro_yout, gyro_zout;
+    int16_t accel_xout, accel_yout, accel_zout;
     gyro_axis_hl_v gyro_axis;
-    gyro_out_t g_data;
+    accel_axis_hl_v accel_axis;
+    raw_out_t g_data;
 
     // Map register addresses to the local struct members
     gyro_axis.gyro_x_out_h = GYRO_REG_XOUT_H;
@@ -83,18 +94,35 @@ gyro_out_t get_gyro_values(void)
     gyro_axis.gyro_z_out_h = GYRO_REG_ZOUT_H;
     gyro_axis.gyro_z_out_l = GYRO_REG_ZOUT_L;
 
+    accel_axis.accel_x_out_h = ACCEL_REG_XOUT_H;
+    accel_axis.accel_x_out_l = ACCEL_REG_XOUT_L;
+    accel_axis.accel_y_out_h = ACCEL_REG_YOUT_H;
+    accel_axis.accel_y_out_l = ACCEL_REG_YOUT_L;
+    accel_axis.accel_z_out_h = ACCEL_REG_ZOUT_H;
+    accel_axis.accel_z_out_l = ACCEL_REG_ZOUT_L;
+
     // Check if the sensor has new data ready in the Interrupt Status register
     if(*R_INTR_ENABLE_STATUS & DATA_RDY_EN_BIT){        
         // Combine two 8-bit registers (High/Low) into a single 16-bit value for each axis
         gyro_xout = reg_uniter_8to16(gyro_axis.gyro_x_out_h, gyro_axis.gyro_x_out_l);
         gyro_yout = reg_uniter_8to16(gyro_axis.gyro_y_out_h, gyro_axis.gyro_y_out_l);
         gyro_zout = reg_uniter_8to16(gyro_axis.gyro_z_out_h, gyro_axis.gyro_z_out_l);
+
+        // Combine two 8-bit registers (High/Low) into a single 16-bit value for each axis
+        accel_xout = reg_uniter_8to16(accel_axis.accel_x_out_h, accel_axis.accel_x_out_l);
+        accel_yout = reg_uniter_8to16(accel_axis.accel_y_out_h, accel_axis.accel_y_out_l);
+        accel_zout = reg_uniter_8to16(accel_axis.accel_z_out_h, accel_axis.accel_z_out_l);
     }
 
     // Store the processed 16-bit values into the final output structure
     g_data.GYRO_XOUT_V = gyro_xout;
     g_data.GYRO_YOUT_V = gyro_yout;
     g_data.GYRO_ZOUT_V = gyro_zout;
+
+    // Store the processed 16-bit values into the final output structure
+    g_data.ACCEL_XOUT_V = accel_xout;
+    g_data.ACCEL_YOUT_V = accel_yout;
+    g_data.ACCEL_ZOUT_V = accel_zout;
 
     return g_data;
 }

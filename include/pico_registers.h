@@ -14,4 +14,6 @@
 // Main I2C0 control block. Contains data FIFOs and communication status registers.
 #define I2C0_BASE 0x40044000     
 
+#define TIMER_BASE 0x40054000
+
 #endif

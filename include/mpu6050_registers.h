@@ -8,6 +8,9 @@
 // Configures the gyroscope full-scale range (e.g., ±250, ±500 °/s).
 #define GYRO_CONFIGURATION_REG 0x1B
 
+// Configures the accelerometer full-scale range (e.g., ±2g, ±4g).
+#define ACCEL_CONFIGURATION_REG 0x1C
+
 // Power management. Used to wake the sensor from sleep mode and select the clock source.
 #define PWR_MGMT_1_REG 0x6B
 
@@ -24,6 +27,7 @@
 #define SMPRT_DIV_REG 0x19
 
 // Gyroscope Data Registers (16-bit values split into High and Low bytes)
+
 // X-Axis (High byte)
 #define GYRO_REG_XOUT_H 0x43
 
@@ -41,5 +45,25 @@
 
 // Z-Axis (Low byte)
 #define GYRO_REG_ZOUT_L 0x48
+
+// Accelerometer Data Registers (16-bit values split into High and Low bytes)
+
+// X-Axis (High byte)
+#define ACCEL_REG_XOUT_H 0x3B
+
+// X-Axis (Low byte)
+#define ACCEL_REG_XOUT_L 0x3C
+
+// Y-Axis (High byte)
+#define ACCEL_REG_YOUT_H 0x3D
+
+// Y-Axis (Low byte)
+#define ACCEL_REG_YOUT_L 0x3E
+
+// Z-Axis (High byte)
+#define ACCEL_REG_ZOUT_H 0x3F
+
+// Z-Axis (Low byte)
+#define ACCEL_REG_ZOUT_L 0x40
 
 #endif
