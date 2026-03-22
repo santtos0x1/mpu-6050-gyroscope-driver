@@ -16,6 +16,7 @@ This project focuses on **Bare Metal** programming, interacting directly with ha
 - **Burst Read Support:** Reads 6-axis data (X, Y, Z) in a single I2C transaction for better synchronization.
 - **Fast Mode:** Configured for 400kHz I2C communication.
 - **Pointer-Based Logic:** Optimized using `volatile` pointers for hardware safety.
+- **Accelerometer-based Compensation:** Uses accelerometer data to correct gyroscope drift and provide smoother values.
 
 ## 🛠️ Hardware Setup
 
