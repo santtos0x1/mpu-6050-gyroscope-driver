@@ -5,21 +5,45 @@
 #include "i2c_rw_data.h"
 
 /* --- Configuration Bits & Values --- */
-#define GYRO_SENSIBILITY_500_BIT 0x08 // Sets Gyroscope sensitivity range to ±500 °/s
-#define DATA_RDY_EN_BIT 0x01 // Enables the "Data Ready" interrupt signal bit
-#define WHOAMI_REG_DEFAULT_V_BIT 0x68 // The expected ID value of the MPU-6050 sensor
-#define DLPF_CFG_2_BIT 0x02 // Sets the Digital Low Pass Filter to 98Hz (Level 2)
-#define SMPRT_DIV_VALUE_BIT 0x09 // Divides the sample rate to achieve a 100Hz output
-#define RESET_ALL_BITS 0x00 // Used to clear or reset all bits in a register
+// Sets Gyroscope sensitivity range to ±500 °/s
+#define GYRO_SENSIBILITY_500_BIT 0x08
+
+// Enables the "Data Ready" interrupt signal bit
+#define DATA_RDY_EN_BIT 0x01
+
+// The expected ID value of the MPU-6050 sensor
+#define WHOAMI_REG_DEFAULT_V_BIT 0x68
+
+// Sets the Digital Low Pass Filter to 98Hz (Level 2)
+#define DLPF_CFG_2_BIT 0x02
+
+// Divides the sample rate to achieve a 100Hz output
+#define SMPRT_DIV_VALUE_BIT 0x09
+
+// Used to clear or reset all bits in a register
+#define RESET_ALL_BITS 0x00
 
 /* --- Register Access Macros (Pointers & Dereferencing) --- */
-#define R_WHOAMI_REG ((volatile uint8_t *)(WHOAMI_REG)) // Pointer to the Who Am I identification register
-#define R_INTR_ENABLE_STATUS ((volatile uint8_t *)(INTR_ENABLE_STATUS)) // Pointer to check the current interrupt status
-#define W_SMPRT_DIV ((volatile uint8_t *)(SMPRT_DIV_REG)) // Direct access to write the Sample Rate Divider
-#define W_INTR_ENABLE ((volatile uint8_t *)(INTR_ENABLE_REG)) // Direct access to write the Interrupt Enable register
-#define W_PWR_MGMT_1 ((volatile uint8_t *)(PWR_MGMT_1_REG)) // Direct access to write Power Management 1
-#define W_CONFIGURATION ((volatile uint8_t *)(CONFIGURATION_REG)) // Direct access to write General Configuration
-#define W_GYRO_CONFIGURATION ((volatile uint8_t *)(GYRO_CONFIGURATION_REG)) // Direct access to write Gyroscope Range
+// Pointer to the Who Am I identification register
+#define R_WHOAMI_REG ((volatile uint8_t *)(WHOAMI_REG))
+
+// Pointer to check the current interrupt status
+#define R_INTR_ENABLE_STATUS ((volatile uint8_t *)(INTR_ENABLE_STATUS))
+
+// Direct access to write the Sample Rate Divider
+#define W_SMPRT_DIV ((volatile uint8_t *)(SMPRT_DIV_REG))
+
+// Direct access to write the Interrupt Enable register
+#define W_INTR_ENABLE ((volatile uint8_t *)(INTR_ENABLE_REG))
+
+// Direct access to write Power Management 1
+#define W_PWR_MGMT_1 ((volatile uint8_t *)(PWR_MGMT_1_REG))
+
+// Direct access to write General Configuration
+#define W_CONFIGURATION ((volatile uint8_t *)(CONFIGURATION_REG))
+
+// Direct access to write Gyroscope Range
+#define W_GYRO_CONFIGURATION ((volatile uint8_t *)(GYRO_CONFIGURATION_REG))
 
 void setup_driver_registers(void)
 {

@@ -2,11 +2,17 @@
 #include "pico_registers.h"
 #include <stdint.h>
 
-// RP2040 Reset block registers and bitmasks
+// Resets done register
 #define RESETS_DONE RESETS_BASE + 0x8
-#define IO_BANK0_BIT (1 << 5) // Resets Digital IO (GPIOs)
-#define PADS_BANK0_BIT (1 << 8) // Resets physical pin controls (Pull-ups/downs)
-#define I2C0_BIT (1 << 3) // Resets the I2C0 hardware block
+
+// Resets Digital IO (GPIOs)
+#define IO_BANK0_BIT (1 << 5)
+
+// Resets physical pin controls (Pull-ups/downs)
+#define PADS_BANK0_BIT (1 << 8)
+
+// Resets the I2C0 hardware block
+#define I2C0_BIT (1 << 3)
 
 // Checks if bit reset is done
 uint8_t is_reset_done(bit_bank_t bit_bank)
