@@ -1,4 +1,4 @@
-#include "pico_driver/error.h"
+#include "pico_driver/pico_error.h"
 #include "pico_driver/pico_registers.h"
 #include <stdint.h>
 
