@@ -2,6 +2,7 @@
 #include "reg_utils.h"
 #include "pico_driver/i2c_rw_data.h"
 #include "pico_driver/pico_registers.h"
+#include "pico_driver/error.h"
 
 // --- Reset and Peripheral Control Bits ---
 // Resets or enables Digital IO (GPIOs)
@@ -70,6 +71,11 @@
 // Signals an I2C Read operation by setting bit 8 (CMD bit) in the data register
 #define IC_READ_CMD 0x100
 
+// Timeout max cycles
+#define I2C_TIMEOUT_CYCLES 100000
+
+int8_t err;
+
 // Initializes and configures rp2040 registers
 void rp2040_setup_hwr(void)
 {
@@ -111,6 +117,22 @@ void rp2040_setup_hwr(void)
     *IC_ENABLE |= 0x1;
 }
 
+// Waits until receive RFNE status
+static int8_t i2c_wait_rfne(void)
+{
+    uint32_t timeout = I2C_TIMEOUT_CYCLES;
+
+    // Waits receive 1 byte of data from sensor
+    while(!(*IC_STATUS & RFNE_BIT)){
+        if(--timeout == 0)
+        {
+            return -1;
+        }
+    };
+
+    return 0;
+}
+
 // Reads a single byte from a specific sensor register via I2C
 uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
 {
@@ -120,8 +142,12 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
     // Sends read command
     *IC_DATA_CMD = IC_READ_CMD;
     
-    // Waits receive 1 byte of data from sensor
-    while(!(*IC_STATUS & RFNE_BIT)){};
+    //Waits until receive RFNE status
+    err = i2c_wait_rnfe();
+    if(err != 0)
+    {
+        pico_restart_i2c();
+    }
 
     // Gets 1 byte of data by setting the first 8 bits to 1 and the remnant to 0, working as a bit filter
     uint8_t reg_data = (uint8_t)(*IC_DATA_CMD & 0xFF);

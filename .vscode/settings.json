@@ -40,10 +40,13 @@
     "cSpell.words": [
         "HCNT",
         "LCNT",
+        "pico",
         "RESETSREG",
         "RFNE",
+        "rnfe",
         "SMPRT",
         "TIMERAWL",
+        "TIMOUT",
         "yout"
     ]
 }
