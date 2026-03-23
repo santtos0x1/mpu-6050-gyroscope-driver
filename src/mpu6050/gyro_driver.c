@@ -1,9 +1,9 @@
-#include "driver/mpu6050_gyroscope_driver.h"
-#include "driver/mpu6050_registers.h"
+#include "driver/gyro_driver.h"
+#include "driver/registers.h"
 #include "string.h"
 #include "reg_utils.h"
 #include "pico_driver/i2c_rw_data.h"
-#include "driver/mpu6050_processing.h"
+#include "driver/gyro_driver.h"
 
 /* --- Configuration Bits & Values --- */
 // Sets Gyroscope sensitivity range to ±500 °/s

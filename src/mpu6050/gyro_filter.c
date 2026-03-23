@@ -1,7 +1,7 @@
-#include "driver/mpu6050_processing.h"
+#include "driver/gyro_filter.h"
 #include <stdint.h>
-#include "pico_driver/pico_time.h"
-#include "driver/mpu6050_gyroscope_driver.h"
+#include "pico_driver/time.h"
+#include "driver/gyro_driver.h"
 #include <math.h>
 
 // Constants for time conversion and unit transformation

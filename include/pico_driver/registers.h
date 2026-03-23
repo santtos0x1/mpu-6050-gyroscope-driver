@@ -1,5 +1,5 @@
-#ifndef PICO_REGISTERS_H
-#define PICO_REGISTER_H
+#ifndef REGISTERS_H
+#define REGISTERS_H
 
 // ---------- RP2040 MEMORY-MAPPED REGISTERS ----------
 // Reset block. Used to bring the I2C0 peripheral out of reset during setup.

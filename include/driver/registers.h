@@ -1,5 +1,5 @@
-#ifndef MPU6050_REGISTERS_H
-#define MPU6050_REGISTERS_H
+#ifndef REGISTERS_H
+#define REGISTERS_H
 
 // ---------- MPU-6050 INTERNAL REGISTERS ----------
 // Reads the sensor's ID (should return 0x68). Useful for sanity checks.
@@ -66,4 +66,4 @@
 // Z-Axis (Low byte)
 #define ACCEL_REG_ZOUT_L 0x40
 
-#endif
+#endif // !REGISTERS_H

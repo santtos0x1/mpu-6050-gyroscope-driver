@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include "reg_utils.h"
 #include "pico_driver/i2c_rw_data.h"
-#include "pico_driver/pico_registers.h"
-#include "pico_driver/pico_error.h"
+#include "pico_driver/registers.h"
+#include "pico_driver/error.h"
 
 // --- Reset and Peripheral Control Bits ---
 // Resets or enables Digital IO (GPIOs)

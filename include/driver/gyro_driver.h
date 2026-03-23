@@ -1,5 +1,5 @@
-#ifndef MPU_DRIVER_H
-#define MPU_DRIVER_H
+#ifndef GYRO_DRIVER_H
+#define GYRO_DRIVER_H
 
 #include <stdint.h>
 

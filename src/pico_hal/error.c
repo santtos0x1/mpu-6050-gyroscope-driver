@@ -1,5 +1,5 @@
-#include "pico_driver/pico_error.h"
-#include "pico_driver/pico_registers.h"
+#include "pico_driver/error.h"
+#include "pico_driver/registers.h"
 #include <stdint.h>
 
 // Main switch: Enable (1) or Disable (0) I2C
