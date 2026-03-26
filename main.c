@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "mpu6050_gyroscope_driver.h"
-#include "i2c_rw_data.h"
+#include "driver/gyro_driver.h"
+#include "pico_driver/i2c_rw_data.h"
 
 int main()
 {
@@ -17,8 +17,9 @@ int main()
     {
         xy_angles_t xy_angles = mpu6050_get_gyro_angles();
 
-        printf("X-Axis: %f", xy_angles.x_angle_value);
-        printf("Y-Axis: %f", xy_angles.y_angle_value);
+        printf("WHOAMI Value: %d\n", rp2040_sensor_recon());
+        printf("X-Axis angle: %f\n", xy_angles.x_angle_value);
+        printf("Y-Axis angle: %f\n", xy_angles.y_angle_value);
 
         // 10ms delay (100Hz)
         sleep_ms(10);

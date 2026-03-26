@@ -3,6 +3,8 @@
 #include "pico_driver/i2c_rw_data.h"
 #include "pico_driver/registers.h"
 #include "pico_driver/error.h"
+#include "driver/registers.h"
+#include <string.h>
 
 // --- Reset and Peripheral Control Bits ---
 // Resets or enables Digital IO (GPIOs)
@@ -12,7 +14,7 @@
 #define PADS_BANK0_BIT (1 << 8)
 
 // Resets or enables the I2C0 hardware block
-#define I2C0_BIT (1 << 3)
+#define I2C1_BIT (1 << 4)
 
 // --- IC_CON Register Configuration (I2C Control) ---
 // Sets I2C speed to 400kHz (bits 2:1)
@@ -27,6 +29,8 @@
 // --- IC_STATUS ---
 // Receive FIFO Non Empty bit, If receive one byte, will alert.
 #define RFNE_BIT (1 << 3)
+#define TFE_BIT (1 << 2)
+#define MST_ACT (1 << 5)
 
 // --- System and Hardware Control Registers ---
 // Register to take peripherals out of reset
@@ -41,27 +45,37 @@
 // Enables the clock signal for peripherals
 #define CLK_PERI_CTRL ((volatile uint32_t *)(CLOCKS_BASE + 0x48))
 
-// --- I2C0 Specific Registers ---
+// --- I2C1 Specific Registers ---
 // Main switch: Enable (1) or Disable (0) I2C
-#define IC_ENABLE ((volatile uint32_t *)(I2C0_BASE + 0x6c))
+#define IC_ENABLE ((volatile uint32_t *)(I2C1_BASE + 0x6c))
 
 // Clock cycles for SCL HIGH level in Fast Mode
-#define IC_FS_SCL_HCNT ((volatile uint32_t *)(I2C0_BASE + 0x1c))
+#define IC_FS_SCL_HCNT ((volatile uint32_t *)(I2C1_BASE + 0x1c))
 
 // Clock cycles for SCL LOW level in Fast Mode
-#define IC_FS_SCL_LCNT ((volatile uint32_t *)(I2C0_BASE + 0x20))
+#define IC_FS_SCL_LCNT ((volatile uint32_t *)(I2C1_BASE + 0x20))
 
 // Main configuration register (Mode, Speed, etc.)
-#define IC_CON ((volatile uint32_t *)(I2C0_BASE + 0x00))
+#define IC_CON ((volatile uint32_t *)(I2C1_BASE + 0x00))
+#define IC_RESTART_EN_BIT (1 << 5)
+
+#define IC_TX_ABRT_SOURCE ((volatile uint32_t *)(I2C1_BASE + 0x80))
+#define IC_CLR_TX_ABRT   ((volatile uint32_t *)(I2C1_BASE + 0x54))
 
 // Slave Address: The address of the target sensor (0x68)
-#define IC_SAR ((volatile uint32_t *)(I2C0_BASE + 0x08))
+#define IC_TAR ((volatile uint32_t *)(I2C1_BASE + 0x04))
 
 // Data buffer: Used to send commands and read received bytes
-#define IC_DATA_CMD ((volatile uint32_t *)(I2C0_BASE + 0x10))
+#define IC_DATA_CMD ((volatile uint32_t *)(I2C1_BASE + 0x10))
 
 // Hardware status: Shows if the buffer is empty or full
-#define IC_STATUS ((volatile uint32_t *)(I2C0_BASE + 0x70))
+#define IC_STATUS ((volatile uint32_t *)(I2C1_BASE + 0x70))
+
+#define PAD_GPIO14 ((volatile uint32_t *)(PADS_BANK0_BASE + 0x3C))
+#define PAD_GPIO15 ((volatile uint32_t *)(PADS_BANK0_BASE + 0x40))
+
+#define PADS_PULL_UP (1 << 3)
+#define PADS_SCHMITT_TRIGGER (1 << 1)
 
 // --- CLOCK ---
 // Enables the peripheral clock (clk_peri) in the CLK_PERI_CTRL register
@@ -70,6 +84,8 @@
 // --- IC_DATA_CMD ---
 // Signals an I2C Read operation by setting bit 8 (CMD bit) in the data register
 #define IC_READ_CMD 0x100
+#define IC_STOP_BIT (1 << 9)
+#define IC_RESTART_BIT (1 << 10)
 
 // Timeout max cycles
 #define I2C_TIMEOUT_CYCLES 100000
@@ -81,11 +97,13 @@ void rp2040_setup_hwr(void)
 {
     bit_bank_t bit_bank;
 
+    bit_bank_t bit_bank = {0};
+
     // Enabling clk_peri
     *CLK_PERI_CTRL |= ENABLE_CLOCK_PERI;
 
     // Sets bits to 1 in a 32-bit bitset
-    bit_bank.bit_arr |= (IO_BANK0_BIT | PADS_BANK0_BIT | I2C0_BIT);
+    bit_bank.bit_arr |= (IO_BANK0_BIT | PADS_BANK0_BIT | I2C1_BIT);
 
     // Reset bits from reset register
     *RESETSREG_BIT_SET &= ~(bit_bank.bit_arr);
@@ -100,21 +118,24 @@ void rp2040_setup_hwr(void)
     *GPIO14_CTRL = 0x03; // I2C SDA
     *GPIO15_CTRL = 0x03; // I2C SCL
 
+    *PAD_GPIO14 = PADS_PULL_UP | PADS_SCHMITT_TRIGGER;
+    *PAD_GPIO15 = PADS_PULL_UP | PADS_SCHMITT_TRIGGER;
+
     // Disables I2C
-    *IC_ENABLE &= ~0x1;
+    *IC_ENABLE = 0x0;
 
     // 120 + 192 = 312 clock cycles
     *IC_FS_SCL_HCNT = 120;
     *IC_FS_SCL_LCNT = 192;
 
     // I2C configuration
-    *IC_CON |= (FAST_MODE | MASTER_MODE | SLAVE_MODE_DISABLE);
+    *IC_CON = (FAST_MODE | MASTER_MODE | SLAVE_MODE_DISABLE | IC_RESTART_EN_BIT);
 
     // Sets slave address register to 0x68 (MPU-6050 default address)
-    *IC_SAR = 0x68;
+    *IC_TAR = 0x68;
 
     // Enables I2C
-    *IC_ENABLE |= 0x1;
+    *IC_ENABLE = 0x1;
 }
 
 // Waits until receive RFNE status
@@ -136,21 +157,55 @@ static int8_t i2c_wait_rfne(void)
 // Reads a single byte from a specific sensor register via I2C
 uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
 {
+    while((*IC_STATUS & RFNE_BIT))
+    {
+        (void)*IC_DATA_CMD;    
+    }
+
     // Points to the sensor address  
-    *IC_DATA_CMD = sensor_reg_addr;
+    *IC_DATA_CMD = (uint32_t)sensor_reg_addr;
+    
+    while(!(*IC_STATUS & TFE_BIT));
+    while(*IC_STATUS & MST_ACT);
 
     // Sends read command
-    *IC_DATA_CMD = IC_READ_CMD;
-    
+    *IC_DATA_CMD = IC_READ_CMD | IC_RESTART_BIT | IC_STOP_BIT;;
+
     //Waits until receive RFNE status
-    err = i2c_wait_rnfe();
+    err = i2c_wait_rfne();
     if(err != 0)
     {
         pico_restart_i2c();
+        return 0;
     }
 
     // Gets 1 byte of data by setting the first 8 bits to 1 and the remnant to 0, working as a bit filter
     uint8_t reg_data = (uint8_t)(*IC_DATA_CMD & 0xFF);
 
     return reg_data;
+}
+
+uint8_t rp2040_sensor_recon(void)
+{
+    while((*IC_STATUS & RFNE_BIT))
+    {
+        (void)(*IC_DATA_CMD);
+    }
+
+    //whoami_reg       
+    *IC_DATA_CMD = 0x75;
+        
+    // Sends read command
+    *IC_DATA_CMD = (IC_READ_CMD | IC_RESTART_BIT | IC_STOP_BIT);
+
+    //Waits until receive RFNE status
+    err = i2c_wait_rfne();
+    if(err != 0)
+    {
+        pico_restart_i2c();
+        return 0;
+    }
+
+    // Gets 1 byte of data by setting the first 8 bits to 1 and the remnant to 0, working as a bit filter
+    return (uint8_t)(*IC_DATA_CMD & 0xFF);;
 }

@@ -7,4 +7,4 @@ typedef enum {
 
 void pico_restart_i2c(void);
 
-#endif
+#endif // !ERROR_H

@@ -18,6 +18,15 @@
     "cmake.generator": "Ninja",
     "cmake.cmakePath": "${userHome}/.pico-sdk/cmake/v3.31.5/bin/cmake",
     "C_Cpp.debugShortcut": false,
+
+    /* --- Configurações de IntelliSense para Bare-Metal --- */
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "C_Cpp.default.compilerPath": "${env:HOME}/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc",
+    "C_Cpp.default.intelliSenseMode": "linux-gcc-arm",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.intelliSenseEngine": "default",
+    /* ---------------------------------------------------- */
+
     "terminal.integrated.env.windows": {
         "PICO_SDK_PATH": "${env:USERPROFILE}/.pico-sdk/sdk/2.2.0",
         "PICO_TOOLCHAIN_PATH": "${env:USERPROFILE}/.pico-sdk/toolchain/14_2_Rel1",
@@ -44,6 +53,7 @@
         "RESETSREG",
         "RFNE",
         "rnfe",
+        "SCHMITT",
         "SMPRT",
         "TIMERAWL",
         "TIMOUT",
