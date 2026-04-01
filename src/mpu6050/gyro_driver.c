@@ -28,83 +28,59 @@
 // Used to clear or reset all bits in a register
 #define RESET_ALL_BITS 0x00
 
-/* --- Register Access Macros (Pointers & Dereferencing) --- */
-// Pointer to the Who Am I identification register
-#define R_WHOAMI_REG ((volatile uint8_t *)(WHOAMI_REG))
-
-// Pointer to check the current interrupt status
-#define R_INTR_ENABLE_STATUS ((volatile uint8_t *)(INTR_ENABLE_STATUS))
-
-// Direct access to write the Sample Rate Divider
-#define W_SMPRT_DIV ((volatile uint8_t *)(SMPRT_DIV_REG))
-
-// Direct access to write the Interrupt Enable register
-#define W_INTR_ENABLE ((volatile uint8_t *)(INTR_ENABLE_REG))
-
-// Direct access to write Power Management 1
-#define W_PWR_MGMT_1 ((volatile uint8_t *)(PWR_MGMT_1_REG))
-
-// Direct access to write General Configuration
-#define W_CONFIGURATION ((volatile uint8_t *)(CONFIGURATION_REG))
-
-// Direct access to write Gyroscope Range
-#define W_GYRO_CONFIGURATION ((volatile uint8_t *)(GYRO_CONFIGURATION_REG))
-
-// Direct access to write Accelerometer Range
-#define W_ACCEL_CONFIGURATION ((volatile uint8_t *)(ACCEL_CONFIGURATION_REG))
-
 void setup_driver_registers(void)
 {
     // Waits until find sensor
-    while(!(*R_WHOAMI_REG & WHOAMI_REG_DEFAULT_V_BIT)){};
+    while(rp2040_i2c_read_byte(WHOAMI_REG) != 0x68);
 
     // Resets all bits from PWR management register
-    *W_PWR_MGMT_1 &= RESET_ALL_BITS;
+    rp2040_i2c_write_byte(PWR_MGMT_1_REG, RESET_ALL_BITS);
 
     // Sets Digital Low Pass Filter (DLPF) to mode 2:
     // Bandwidth: 98Hz
     // Delay: 2.8ms
     // Fs: 1kHz
-    *W_CONFIGURATION |= DLPF_CFG_2_BIT;
+    rp2040_i2c_write_byte(CONFIGURATION_REG, DLPF_CFG_2_BIT);
 
     // Configures gyroscope sensibility to ±500°/s
-    *W_GYRO_CONFIGURATION |= GYRO_SENSIBILITY_500_BIT;
+    rp2040_i2c_write_byte(GYRO_CONFIGURATION_REG, GYRO_SENSIBILITY_500_BIT);
 
     // Configures accelerometer sensibility to ±4g
-    *W_ACCEL_CONFIGURATION |= ACCEL_FULL_SCALE_RANGE_4G;
+    rp2040_i2c_write_byte(ACCEL_CONFIGURATION_REG, ACCEL_FULL_SCALE_RANGE_4G);
 
     // Enables interrupt when data is ready
-    *W_INTR_ENABLE |= DATA_RDY_EN_BIT;
+    rp2040_i2c_write_byte(INTR_ENABLE_REG, DATA_RDY_EN_BIT);
 
     // Sets 0x09 to divide to set sample rate value to 100hz, getting 1 sample each 10ms;
-    *W_SMPRT_DIV |= SMPRT_DIV_VALUE_BIT;
+    rp2040_i2c_write_byte(SMPRT_DIV_REG, SMPRT_DIV_VALUE_BIT);
 }
 
 raw_out_t get_raw_values(void)
 {
     int16_t gyro_xout, gyro_yout, gyro_zout;
     int16_t accel_xout, accel_yout, accel_zout;
-    gyro_axis_hl_v gyro_axis;
-    accel_axis_hl_v accel_axis;
-    raw_out_t g_data;
+    
+    gyro_axis_hl_v gyro_axis = {0};
+    accel_axis_hl_v accel_axis = {0};
+    raw_out_t g_data = {0};
 
     // Map register addresses to the local struct members
-    gyro_axis.gyro_x_out_h = GYRO_REG_XOUT_H;
-    gyro_axis.gyro_x_out_l = GYRO_REG_XOUT_L;
-    gyro_axis.gyro_y_out_h = GYRO_REG_YOUT_H;
-    gyro_axis.gyro_y_out_l = GYRO_REG_YOUT_L;
-    gyro_axis.gyro_z_out_h = GYRO_REG_ZOUT_H;
-    gyro_axis.gyro_z_out_l = GYRO_REG_ZOUT_L;
+    gyro_axis.gyro_x_out_h = rp2040_i2c_read_byte(GYRO_REG_XOUT_H);
+    gyro_axis.gyro_x_out_l = rp2040_i2c_read_byte(GYRO_REG_XOUT_L);
+    gyro_axis.gyro_y_out_h = rp2040_i2c_read_byte(GYRO_REG_YOUT_H);
+    gyro_axis.gyro_y_out_l = rp2040_i2c_read_byte(GYRO_REG_YOUT_L);
+    gyro_axis.gyro_z_out_h = rp2040_i2c_read_byte(GYRO_REG_ZOUT_H);
+    gyro_axis.gyro_z_out_l = rp2040_i2c_read_byte(GYRO_REG_ZOUT_L);
 
-    accel_axis.accel_x_out_h = ACCEL_REG_XOUT_H;
-    accel_axis.accel_x_out_l = ACCEL_REG_XOUT_L;
-    accel_axis.accel_y_out_h = ACCEL_REG_YOUT_H;
-    accel_axis.accel_y_out_l = ACCEL_REG_YOUT_L;
-    accel_axis.accel_z_out_h = ACCEL_REG_ZOUT_H;
-    accel_axis.accel_z_out_l = ACCEL_REG_ZOUT_L;
+    accel_axis.accel_x_out_h = rp2040_i2c_read_byte(ACCEL_REG_XOUT_H);
+    accel_axis.accel_x_out_l = rp2040_i2c_read_byte(ACCEL_REG_XOUT_L);
+    accel_axis.accel_y_out_h = rp2040_i2c_read_byte(ACCEL_REG_YOUT_H);
+    accel_axis.accel_y_out_l = rp2040_i2c_read_byte(ACCEL_REG_YOUT_L);
+    accel_axis.accel_z_out_h = rp2040_i2c_read_byte(ACCEL_REG_ZOUT_H);
+    accel_axis.accel_z_out_l = rp2040_i2c_read_byte(ACCEL_REG_ZOUT_L);
 
     // Check if the sensor has new data ready in the Interrupt Status register
-    if(*R_INTR_ENABLE_STATUS & DATA_RDY_EN_BIT){        
+    if(rp2040_i2c_read_byte(INTR_ENABLE_STATUS) & DATA_RDY_EN_BIT){        
         // Combine two 8-bit registers (High/Low) into a single 16-bit value for each axis
         gyro_xout = reg_uniter_8to16(gyro_axis.gyro_x_out_h, gyro_axis.gyro_x_out_l);
         gyro_yout = reg_uniter_8to16(gyro_axis.gyro_y_out_h, gyro_axis.gyro_y_out_l);

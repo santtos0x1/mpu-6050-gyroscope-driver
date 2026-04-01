@@ -11,6 +11,8 @@ void rp2040_setup_hwr(void);
 
 uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr);
 
+uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data);
+
 uint8_t rp2040_sensor_recon(void);
 
 #endif // !I2C_RW_DATA_H

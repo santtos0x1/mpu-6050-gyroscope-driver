@@ -169,7 +169,7 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
     while(*IC_STATUS & MST_ACT);
 
     // Sends read command
-    *IC_DATA_CMD = IC_READ_CMD | IC_RESTART_BIT | IC_STOP_BIT;;
+    *IC_DATA_CMD = IC_READ_CMD | IC_RESTART_BIT | IC_STOP_BIT;
 
     //Waits until receive RFNE status
     err = i2c_wait_rfne();
@@ -185,6 +185,24 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
     return reg_data;
 }
 
+uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
+{
+    while((*IC_STATUS & RFNE_BIT))
+    {
+        (void)*IC_DATA_CMD;    
+    } 
+    
+    // Points to the sensor address  
+    *IC_DATA_CMD = (uint32_t)sensor_reg_addr;
+
+    // Sends read command
+    *IC_DATA_CMD = (uint32_t)data | IC_STOP_BIT;
+
+    while(*IC_STATUS & MST_ACT);
+
+    return 0;
+}
+
 uint8_t rp2040_sensor_recon(void)
 {
     while((*IC_STATUS & RFNE_BIT))
@@ -198,7 +216,7 @@ uint8_t rp2040_sensor_recon(void)
     // Sends read command
     *IC_DATA_CMD = (IC_READ_CMD | IC_RESTART_BIT | IC_STOP_BIT);
 
-    //Waits until receive RFNE status
+    //Waits until receive RFNE status2
     err = i2c_wait_rfne();
     if(err != 0)
     {
