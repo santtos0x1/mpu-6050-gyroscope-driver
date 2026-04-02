@@ -31,7 +31,13 @@
 void setup_driver_registers(void)
 {
     // Waits until find sensor
-    while(rp2040_i2c_read_byte(WHOAMI_REG) != 0x68);
+    for(int i=0;i<1000;i++)
+    {
+        if(rp2040_i2c_read_byte(WHOAMI_REG) == 0x68)
+        {
+            break;
+        }
+    }
 
     // Resets all bits from PWR management register
     rp2040_i2c_write_byte(PWR_MGMT_1_REG, RESET_ALL_BITS);
