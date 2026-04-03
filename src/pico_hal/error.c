@@ -1,6 +1,7 @@
+#include <stdint.h>
+
 #include "pico_driver/error.h"
 #include "pico_driver/registers.h"
-#include <stdint.h>
 
 // Main switch: Enable (1) or Disable (0) I2C
 #define IC_ENABLE ((volatile uint32_t *)(I2C1_BASE + 0x6c))

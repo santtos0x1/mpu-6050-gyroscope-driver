@@ -14,13 +14,11 @@
 // Resets the I2C0 hardware block
 #define I2C0_BIT (1 << 3)
 
-// Checks if bit reset is done
 uint8_t is_reset_done(bit_bank_t bit_bank)
 {
     return ((*(volatile uint32_t *)(RESETS_DONE)) & (IO_BANK0_BIT | PADS_BANK0_BIT | I2C0_BIT));
 }
 
-// Combines 2 8-bit registers into one of 16-bit
 uint16_t reg_uniter_8to16(uint8_t reg_h, uint8_t reg_l)
 {
     // Initialize an empty 16-bit variable (00000000 00000000)

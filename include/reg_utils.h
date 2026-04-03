@@ -4,8 +4,10 @@
 #include <stdint.h>
 #include "pico_driver/i2c_rw_data.h"
 
+// Checks if the reset for the given peripherals is finished
 uint8_t is_reset_done(bit_bank_t bit_bank);
 
+// Combines two 8-bit registers into a 16-bit value
 uint16_t reg_uniter_8to16(uint8_t reg_h, uint8_t reg_l);
 
 #endif // !REG_UTILS_H

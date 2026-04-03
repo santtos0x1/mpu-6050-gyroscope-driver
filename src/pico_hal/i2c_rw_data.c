@@ -93,7 +93,6 @@
 
 uint8_t err;
 
-// Initializes and configures rp2040 registers
 void rp2040_setup_hwr(void)
 {
     bit_bank_t bit_bank = {0};
@@ -117,8 +116,8 @@ void rp2040_setup_hwr(void)
     *GPIO14_CTRL = 0x03; // I2C SDA
     *GPIO15_CTRL = 0x03; // I2C SCL
 
-    *PAD_GPIO14 = PADS_PULL_UP | PADS_SCHMITT_TRIGGER;
-    *PAD_GPIO15 = PADS_PULL_UP | PADS_SCHMITT_TRIGGER;
+    *PAD_GPIO14 = PADS_SCHMITT_TRIGGER;
+    *PAD_GPIO15 = PADS_SCHMITT_TRIGGER;
 
     // Disables I2C
     *IC_ENABLE = 0x0;
@@ -153,7 +152,6 @@ static int8_t i2c_wait_rfne(void)
     return 0;
 }
 
-// Reads a single byte from a specific sensor register via I2C
 uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
 {
     uint32_t timeout;
@@ -200,7 +198,6 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
     return (uint8_t)(*IC_DATA_CMD & 0xFF);
 }
 
-// Writes a single byte in a specific sensor register via I2C
 uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
 {
     uint32_t timeout;
@@ -239,7 +236,6 @@ uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
     return 0;
 }
 
-// Reads WHOAMI register in MPU-6050 sensor
 uint8_t rp2040_sensor_recon(void)
 {
     return rp2040_i2c_read_byte(0x75);
