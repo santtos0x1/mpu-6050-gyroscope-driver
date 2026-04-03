@@ -71,6 +71,7 @@ int main()
 
 ## Project Structure
 
+```
 mpu6050-rp2040-driver/
 ├── src/
 │   ├── mpu6050/
@@ -96,3 +97,4 @@ mpu6050-rp2040-driver/
 ├── LICENSE
 ├── CONTRIBUTING.md
 └── CODE_OF_CONDUCT.md
+```
