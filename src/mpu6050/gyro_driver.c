@@ -31,7 +31,7 @@
 void setup_driver_registers(void)
 {
     // Waits until find sensor
-    for(int i=0;i<1000;i++)
+    for(int i = 0; i < 1000; i++)
     {
         if(rp2040_i2c_read_byte(WHOAMI_REG) == 0x68)
         {
