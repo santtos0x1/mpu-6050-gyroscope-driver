@@ -30,6 +30,7 @@
 // --- IC_STATUS ---
 // Receive FIFO Non Empty bit, If receive one byte, will alert.
 #define RFNE_BIT (1 << 3)
+
 #define TFNF_BIT (1 << 1)
 #define MST_ACT (1 << 5)
 
@@ -59,9 +60,6 @@
 // Main configuration register (Mode, Speed, etc.)
 #define IC_CON ((volatile uint32_t *)(I2C1_BASE + 0x00))
 #define IC_RESTART_EN_BIT (1 << 5)
-
-#define IC_TX_ABRT_SOURCE ((volatile uint32_t *)(I2C1_BASE + 0x80))
-#define IC_CLR_TX_ABRT ((volatile uint32_t *)(I2C1_BASE + 0x54))
 
 // Slave Address: The address of the target sensor (0x68)
 #define IC_TAR ((volatile uint32_t *)(I2C1_BASE + 0x04))
@@ -217,7 +215,6 @@ uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
     // Points to the sensor address  
     *IC_DATA_CMD = sensor_reg_addr;
 
-    
     timeout = I2C_TIMEOUT_CYCLES;
     
     // Waits until free FIFO

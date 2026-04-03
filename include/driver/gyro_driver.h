@@ -39,13 +39,19 @@ typedef struct {
     float y_angle_value; // Calculated angle for the Y axis (Roll)
 } xy_angles_t;
 
-// Initializes and configures the MPU-6050 registers
+/* 
+ * Initializes and configures the MPU-6050 registers
+*/
 void setup_driver_registers(void);
 
-// Reads the raw 8-bit registers, unites them into 16-bit values, and sets the struct
+/*
+ * Reads the raw 8-bit registers, unites them into 16-bit values, and sets the struct
+*/
 raw_out_t get_raw_values(void);
 
-// Gets X and Y axis angles and fills a struct
+/*
+ * Gets X and Y axis angles and fills a struct
+*/
 xy_angles_t mpu6050_get_gyro_angles(void);
 
 #endif

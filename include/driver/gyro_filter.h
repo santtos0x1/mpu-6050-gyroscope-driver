@@ -5,13 +5,13 @@
 #include "driver/gyro_driver.h"
 
 /*
- * Calculates the pitch angle (rotation around the X axis)
+ * @brief Calculates the pitch angle (rotation around the X axis)
  * using raw accelerometer/gyroscope values obtained from the MPU6050.
  */
 float mpu6050_get_pitch_x(raw_out_t raw_values);
 
 /*
- * Calculates the roll angle (rotation around the Y axis)
+ * @brief Calculates the roll angle (rotation around the Y axis)
  * using raw accelerometer/gyroscope values obtained from the MPU6050.
  */
 float mpu6050_get_roll_y(raw_out_t raw_values);
