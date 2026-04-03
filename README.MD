@@ -68,3 +68,31 @@ int main()
     return 0;
 }
 ```
+
+## Project Structure
+
+mpu6050-rp2040-driver/
+├── src/
+│   ├── mpu6050/
+│   │   ├── gyro_driver.c
+│   │   └── gyro_filter.c
+│   ├── pico_hal/
+│   │   ├── i2c_rw_data.c
+│   │   ├── time.c
+│   │   └── error.c
+│   └── reg_utils.c
+│
+├── include/
+│   ├── driver/
+│   │   ├── gyro_driver.h
+│   │   └── gyro_filter.h
+│   └── pico_driver/
+│       ├── i2c_rw_data.h
+│       ├── time.h
+│       └── error.h
+│
+├── CMakeLists.txt
+├── README.md
+├── LICENSE
+├── CONTRIBUTING.md
+└── CODE_OF_CONDUCT.md
