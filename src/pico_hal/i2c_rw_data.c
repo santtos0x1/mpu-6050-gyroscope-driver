@@ -208,7 +208,7 @@ uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
     // Flush IC_DATA
     while((*IC_STATUS & RFNE_BIT))
     {
-        (void)*IC_DATA_CMD;    
+        (void)*IC_DATA_CMD;
     }
 
     timeout = I2C_TIMEOUT_CYCLES;

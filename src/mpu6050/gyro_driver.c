@@ -5,6 +5,7 @@
 #include "pico_driver/i2c_rw_data.h"
 #include "driver/gyro_driver.h"
 #include "driver/gyro_filter.h"
+#include "pico_driver/time.h"
 
 /* --- Configuration Bits & Values --- */
 // Sets Gyroscope sensitivity range to ±500 °/s
@@ -29,18 +30,33 @@
 #define RESET_ALL_BITS 0x00
 
 void setup_driver_registers(void)
-{
+{   
+    uint8_t s_found = 0;
+
     // Waits until find sensor
     for(int i = 0; i < 1000; i++)
     {
         if(rp2040_i2c_read_byte(WHOAMI_REG) == 0x68)
         {
+            s_found = 1;
             break;
         }
+
+        // 1ms delay
+        delay_cycle(MS_TO_CYCLES(1));
+    }
+
+    // Sensor not found
+    if(!s_found)
+    {
+        return;
     }
 
     // Resets all bits from PWR management register
     rp2040_i2c_write_byte(PWR_MGMT_1_REG, RESET_ALL_BITS);
+
+    // 10ms delay
+    delay_cycle(MS_TO_CYCLES(10));
 
     // Sets Digital Low Pass Filter (DLPF) to mode 2:
     // Bandwidth: 98Hz

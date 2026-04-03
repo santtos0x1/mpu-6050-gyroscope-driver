@@ -13,3 +13,12 @@ uint32_t get_time_us(void)
     // Read and return the value from the timer register
     return *TIMERAWL;
 }
+
+void delay_cycle(volatile uint32_t cycles)
+{
+    while(--cycles != 0)
+    {
+        // One cycle jump
+        __asm volatile("nop");
+    }
+}
