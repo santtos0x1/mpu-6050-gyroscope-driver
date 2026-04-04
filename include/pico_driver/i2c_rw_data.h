@@ -34,8 +34,8 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr);
 uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data);
 
 /*
- * @brief Returns the value in WHOAMI_REG (0x75), expected value: 0x68
+ * @brief Returns PICO_OK_T if founds sensor and PICO_SENSOR_ACK_ERROR if not found.
 */
-uint8_t rp2040_sensor_recon(void);
+pico_err_t rp2040_sensor_recon(void);
 
 #endif // !I2C_RW_DATA_H

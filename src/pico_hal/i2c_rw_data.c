@@ -250,7 +250,14 @@ pico_err_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
     return PICO_OK_T;
 }
 
-uint8_t rp2040_sensor_recon(void)
+pico_err_t rp2040_sensor_recon(void)
 {
-    return rp2040_i2c_read_byte(0x75);
+    uint8_t data = rp2040_i2c_read_byte(0x75);
+
+    if(data != 0x68)
+    {
+        return PICO_SENSOR_ACK_ERROR;
+    }
+
+    return PICO_OK_T;
 }

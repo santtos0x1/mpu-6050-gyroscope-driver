@@ -25,7 +25,17 @@ int main()
     {
         xy_angles_t xy_angles = mpu6050_get_gyro_angles();
 
-        printf("WHOAMI Value: %d\n", rp2040_sensor_recon());
+        err = rp2040_sensor_recon();
+        if(err != PICO_OK_T)
+        {
+            printf("Sensor status: %s", pico_err_to_name(err));
+            return 1;
+        }
+        else
+        {
+            printf("Sensor status: %s\n", pico_err_to_name(err));   
+        }
+        
         printf("X-Axis angle: %f\n", xy_angles.x_angle_value);
         printf("Y-Axis angle: %f\n", xy_angles.y_angle_value);
 

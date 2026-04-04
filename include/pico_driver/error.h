@@ -8,6 +8,7 @@ typedef enum {
     PICO_OK_T = 0,
     PICO_GENERIC_ERR_T = -1,
     PICO_TIMEOUT_ERR_T = -2,
+    PICO_SENSOR_ACK_ERROR = -3,
 } pico_err_t;
 
 /*

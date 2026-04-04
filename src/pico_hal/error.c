@@ -23,5 +23,6 @@ char *pico_err_to_name(pico_err_t error)
         case PICO_OK_T: return "PICO_OK_T";
         case PICO_TIMEOUT_ERR_T: return "PICO_TIMEOUT_ERR_T";
         case PICO_GENERIC_ERR_T: return "PICO_GENERIC_ERR_T";
+        case PICO_SENSOR_ACK_ERROR: return "PICO_SENSOR_ACK_ERROR";
     }
 }
