@@ -15,3 +15,13 @@ void pico_restart_i2c(void)
     // Enables I2C
     *IC_ENABLE |= 0x1;
 }
+
+char *pico_err_to_name(pico_err_t error)
+{
+    switch(error)
+    {
+        case PICO_OK_T: return "PICO_OK_T";
+        case PICO_TIMEOUT_ERR_T: return "PICO_TIMEOUT_ERR_T";
+        case PICO_GENERIC_ERR_T: return "PICO_GENERIC_ERR_T";
+    }
+}

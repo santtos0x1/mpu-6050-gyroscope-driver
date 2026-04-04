@@ -2,13 +2,21 @@
 #include "pico/stdlib.h"
 #include "driver/gyro_driver.h"
 #include "pico_driver/i2c_rw_data.h"
+#include "pico_driver/error.h"
 
 int main()
 {
+    pico_err_t err;
+
     stdio_init_all();
 
     // Starts and configures rp2040 registers and peripherals
-    rp2040_setup_hwr();
+    err = rp2040_setup_hwr();
+    if(err != PICO_OK_T)
+    {
+        printf("ERROR: %s", pico_err_to_name(err));
+        return 1;
+    }
     
     // Starts and configures sensor registers
     setup_driver_registers();

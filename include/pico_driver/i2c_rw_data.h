@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "pico_driver/error.h"
+
 /*
  * Bit bank structure used to manipulate hardware control
  * registers that operate as bitsets (reset control, clock
@@ -19,7 +21,7 @@ typedef struct {
  * @brief Initializes and configures the RP2040 hardware required
  * for I2C communication.
 */
- void rp2040_setup_hwr(void);
+pico_err_t rp2040_setup_hwr(void);
 
 /*
  * @brief Reads a single byte from a sensor register over I2C.

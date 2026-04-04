@@ -91,8 +91,9 @@
 
 uint8_t err;
 
-void rp2040_setup_hwr(void)
+pico_err_t rp2040_setup_hwr(void)
 {
+    int timeout;
     bit_bank_t bit_bank = {0};
 
     // Enabling clk_peri
@@ -105,7 +106,12 @@ void rp2040_setup_hwr(void)
     *RESETSREG_BIT_SET &= ~(bit_bank.bit_arr);
 
     // Waits until reset bits
-    while(!is_reset_done(bit_bank));
+    timeout = I2C_TIMEOUT_CYCLES;
+    while(!(is_reset_done(bit_bank)) && --timeout);
+    if(timeout == 0)
+    {
+        return PICO_TIMEOUT_ERR_T;
+    }
 
     // Resets bitset from struct
     memset(&bit_bank, 0, sizeof(bit_bank_t));
@@ -132,10 +138,12 @@ void rp2040_setup_hwr(void)
 
     // Enables I2C
     *IC_ENABLE = 0x1;
+
+    return PICO_OK_T;
 }
 
 // Waits until receive RFNE status
-static int8_t i2c_wait_rfne(void)
+static pico_err_t i2c_wait_rfne(void)
 {
     uint32_t timeout = I2C_TIMEOUT_CYCLES;
 
@@ -143,11 +151,11 @@ static int8_t i2c_wait_rfne(void)
     while(!(*IC_STATUS & RFNE_BIT)){
         if(--timeout == 0)
         {
-            return -1;
+            return PICO_TIMEOUT_ERR_T;
         }
     };
 
-    return 0;
+    return PICO_OK;
 }
 
 uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
@@ -164,7 +172,7 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
 
     // Waits until free FIFO
     while(!(*IC_STATUS & TFNF_BIT) && --timeout);
-    if(timeout == 0) return 1;
+    if(timeout == 0) return 0;
 
     // Points to the sensor address  
     *IC_DATA_CMD = sensor_reg_addr;
@@ -173,7 +181,7 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
     
     // Waits until free FIFO
     while(!(*IC_STATUS & TFNF_BIT) && --timeout);
-    if(timeout == 0) return 2;
+    if(timeout == 0) return 0;
 
     // Sends read command
     *IC_DATA_CMD = IC_READ_CMD | IC_RESTART_BIT | IC_STOP_BIT;
@@ -196,7 +204,7 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
     return (uint8_t)(*IC_DATA_CMD & 0xFF);
 }
 
-uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
+pico_err_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
 {
     uint32_t timeout;
     
@@ -210,7 +218,10 @@ uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
     
     // Waits until free FIFO
     while(!(*IC_STATUS & TFNF_BIT) && --timeout);
-    if(timeout == 0) return 1;
+    if(timeout == 0)
+    {
+        return PICO_TIMEOUT_ERR_T;
+    }
 
     // Points to the sensor address  
     *IC_DATA_CMD = sensor_reg_addr;
@@ -219,7 +230,10 @@ uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
     
     // Waits until free FIFO
     while(!(*IC_STATUS & TFNF_BIT) && --timeout);
-    if(timeout == 0) return 2;
+    if(timeout == 0)
+    {
+        return PICO_TIMEOUT_ERR_T;
+    }
 
     // Sends data to write in address
     *IC_DATA_CMD = data | IC_STOP_BIT;
@@ -228,9 +242,12 @@ uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data)
 
     // Waits until receive Master activity bit status
     while((*IC_STATUS & MST_ACT) && --timeout);
-    if(timeout == 0) return 3;
+    if(timeout == 0)
+    {
+        return PICO_TIMEOUT_ERR_T;
+    }
 
-    return 0;
+    return PICO_OK_T;
 }
 
 uint8_t rp2040_sensor_recon(void)

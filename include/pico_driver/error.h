@@ -5,11 +5,9 @@
  * Enumeration of error codes used across the driver.
  */
 typedef enum {
-    /*
-     * Indicates that an I2C operation exceeded the expected
-     * waiting time (timeout occurred).
-     */
-    I2C_TIMEOUT_ERR
+    PICO_OK_T = 0,
+    PICO_GENERIC_ERR_T = -1,
+    PICO_TIMEOUT_ERR_T = -2,
 } pico_err_t;
 
 /*
@@ -21,5 +19,7 @@ typedef enum {
  * hardware so communication can resume normally.
  */
 void pico_restart_i2c(void);
+
+char *pico_err_to_name(pico_err_t error);
 
 #endif // !ERROR_H
