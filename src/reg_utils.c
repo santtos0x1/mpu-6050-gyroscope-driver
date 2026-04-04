@@ -2,21 +2,12 @@
 #include "pico_driver/registers.h"
 #include <stdint.h>
 
-// Resets done register
+// Resets done register offset
 #define RESETS_DONE RESETS_BASE + 0x8
-
-// Resets Digital IO (GPIOs)
-#define IO_BANK0_BIT (1 << 5)
-
-// Resets physical pin controls (Pull-ups/downs)
-#define PADS_BANK0_BIT (1 << 8)
-
-// Resets the I2C0 hardware block
-#define I2C0_BIT (1 << 3)
 
 uint8_t is_reset_done(bit_bank_t bit_bank)
 {
-    return ((*(volatile uint32_t *)(RESETS_DONE)) & (IO_BANK0_BIT | PADS_BANK0_BIT | I2C0_BIT));
+    return ((*(volatile uint32_t *)(RESETS_DONE)) & (bit_bank.bit_arr));
 }
 
 uint16_t reg_uniter_8to16(uint8_t reg_h, uint8_t reg_l)
