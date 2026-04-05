@@ -31,7 +31,7 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr);
 /*
  * @brief Writes a single byte to a sensor register over I2C.
 */
-uint8_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data);
+pico_err_t rp2040_i2c_write_byte(uint8_t sensor_reg_addr, uint8_t data);
 
 /*
  * @brief Returns PICO_OK_T if founds sensor and PICO_SENSOR_ACK_ERROR if not found.

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "pico_driver/error.h"
+
 // Structure to store the final 16-bit gyroscope values for all 3 axes
 typedef struct {
     int16_t GYRO_XOUT_V; // X-axis final value
@@ -42,7 +44,7 @@ typedef struct {
 /* 
  * Initializes and configures the MPU-6050 registers
 */
-void setup_driver_registers(void);
+pico_err_t setup_driver_registers(void);
 
 /*
  * Reads the raw 8-bit registers, unites them into 16-bit values, and sets the struct

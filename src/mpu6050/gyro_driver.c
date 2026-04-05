@@ -7,6 +7,7 @@
 #include "driver/gyro_driver.h"
 #include "driver/gyro_filter.h"
 #include "pico_driver/time.h"
+#include "pico_driver/error.h"
 
 /* --- Configuration Bits & Values --- */
 // Sets Gyroscope sensitivity range to ±500 °/s
@@ -30,7 +31,7 @@
 // Used to clear or reset all bits in a register
 #define RESET_ALL_BITS 0x00
 
-void setup_driver_registers(void)
+pico_err_t setup_driver_registers(void)
 {   
     uint8_t s_found = 0;
 
@@ -44,20 +45,20 @@ void setup_driver_registers(void)
         }
 
         // 1ms delay between attempts
-        delay_cycle(MS_TO_CYCLES(1));
+        delay_clk_cycle(MS_TO_CYCLES(1));
     }
 
     // Sensor not found
     if(!s_found)
     {
-        return;
+        return PICO_SENSOR_ACK_ERROR;
     }
 
     // Resets all bits from Power Management register (wakes up the sensor)
     rp2040_i2c_write_byte(PWR_MGMT_1_REG, RESET_ALL_BITS);
 
     // Waits for the sensor internal reset to complete
-    delay_cycle(MS_TO_CYCLES(10));
+    delay_clk_cycle(MS_TO_CYCLES(10));
 
     // Sets Digital Low Pass Filter (DLPF) to mode 2:
     // Bandwidth: 98Hz
@@ -77,6 +78,8 @@ void setup_driver_registers(void)
     // Sets sample rate divider.
     // 1kHz / (1 + 9) = 100Hz → one sample every 10ms
     rp2040_i2c_write_byte(SMPRT_DIV_REG, SMPRT_DIV_VALUE_BIT);
+
+    return PICO_OK_T;
 }
 
 raw_out_t get_raw_values(void)
@@ -86,21 +89,26 @@ raw_out_t get_raw_values(void)
     
     gyro_axis_hl_v gyro_axis = {0};
     accel_axis_hl_v accel_axis = {0};
+
     raw_out_t g_data = {0};
 
     // Read gyroscope high/low register values
     gyro_axis.gyro_x_out_h = rp2040_i2c_read_byte(GYRO_REG_XOUT_H);
     gyro_axis.gyro_x_out_l = rp2040_i2c_read_byte(GYRO_REG_XOUT_L);
+
     gyro_axis.gyro_y_out_h = rp2040_i2c_read_byte(GYRO_REG_YOUT_H);
     gyro_axis.gyro_y_out_l = rp2040_i2c_read_byte(GYRO_REG_YOUT_L);
+
     gyro_axis.gyro_z_out_h = rp2040_i2c_read_byte(GYRO_REG_ZOUT_H);
     gyro_axis.gyro_z_out_l = rp2040_i2c_read_byte(GYRO_REG_ZOUT_L);
 
     // Read accelerometer high/low register values
     accel_axis.accel_x_out_h = rp2040_i2c_read_byte(ACCEL_REG_XOUT_H);
     accel_axis.accel_x_out_l = rp2040_i2c_read_byte(ACCEL_REG_XOUT_L);
+
     accel_axis.accel_y_out_h = rp2040_i2c_read_byte(ACCEL_REG_YOUT_H);
     accel_axis.accel_y_out_l = rp2040_i2c_read_byte(ACCEL_REG_YOUT_L);
+
     accel_axis.accel_z_out_h = rp2040_i2c_read_byte(ACCEL_REG_ZOUT_H);
     accel_axis.accel_z_out_l = rp2040_i2c_read_byte(ACCEL_REG_ZOUT_L);
 
@@ -134,13 +142,13 @@ raw_out_t get_raw_values(void)
 xy_angles_t mpu6050_get_gyro_angles(void)
 {
     raw_out_t raw_data = {0};
+
     xy_angles_t xy_angles = {0};
 
     // Read raw sensor values
     raw_data = get_raw_values();
 
-    // Convert raw values to pitch and roll angles
-    xy_angles.x_angle_value = mpu6050_get_pitch_x(raw_data);
+    xy_angles.x_angle_value = mpu6050_get_pitch_x(raw_data);    
     xy_angles.y_angle_value = mpu6050_get_roll_y(raw_data);
 
     return xy_angles;

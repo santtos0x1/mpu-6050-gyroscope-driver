@@ -42,7 +42,9 @@ add_executable(mpu_gyroscope_driver
                src/reg_utils.c
                src/mpu6050/gyro_filter.c 
                src/pico_hal/time.c
-               src/pico_hal/error.c)
+               src/pico_hal/error.c
+               tests/mock/test_mpu6050.c
+               tests/test_registers.c)
 
 pico_set_program_name(mpu_gyroscope_driver "mpu_gyroscope_driver")
 pico_set_program_version(mpu_gyroscope_driver "0.1")
@@ -51,6 +53,8 @@ pico_set_program_version(mpu_gyroscope_driver "0.1")
 pico_enable_stdio_uart(mpu_gyroscope_driver 0)
 pico_enable_stdio_usb(mpu_gyroscope_driver 1)
 
+set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+
 # Add the standard library to the build
 target_link_libraries(mpu_gyroscope_driver
         pico_stdlib)
@@ -58,6 +62,7 @@ target_link_libraries(mpu_gyroscope_driver
 # Add the standard include files to the build
 target_include_directories(mpu_gyroscope_driver PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/tests/include
 )
 
 pico_add_extra_outputs(mpu_gyroscope_driver)

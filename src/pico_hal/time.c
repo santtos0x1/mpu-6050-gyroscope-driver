@@ -12,7 +12,7 @@ uint32_t get_time_us(void)
     return *TIMERAWL;
 }
 
-void delay_cycle(volatile uint32_t cycles)
+void delay_clk_cycle(volatile uint32_t cycles)
 {
     while(--cycles != 0)
     {

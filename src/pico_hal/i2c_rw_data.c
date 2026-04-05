@@ -32,6 +32,7 @@
 #define RFNE_BIT (1 << 3)
 
 #define TFNF_BIT (1 << 1)
+
 #define MST_ACT (1 << 5)
 
 // --- System and Hardware Control Registers ---
@@ -59,6 +60,7 @@
 
 // Main configuration register (Mode, Speed, etc.)
 #define IC_CON ((volatile uint32_t *)(I2C1_BASE + 0x00))
+
 #define IC_RESTART_EN_BIT (1 << 5)
 
 // Slave Address: The address of the target sensor (0x68)
@@ -71,9 +73,11 @@
 #define IC_STATUS ((volatile uint32_t *)(I2C1_BASE + 0x70))
 
 #define PAD_GPIO14 ((volatile uint32_t *)(PADS_BANK0_BASE + 0x3C))
+
 #define PAD_GPIO15 ((volatile uint32_t *)(PADS_BANK0_BASE + 0x40))
 
 #define PADS_PULL_UP (1 << 3)
+
 #define PADS_SCHMITT_TRIGGER (1 << 1)
 
 // --- CLOCK ---
@@ -83,13 +87,31 @@
 // --- IC_DATA_CMD ---
 // Signals an I2C Read operation by setting bit 8 (CMD bit) in the data register
 #define IC_READ_CMD 0x100
+
 #define IC_STOP_BIT (1 << 9)
+
 #define IC_RESTART_BIT (1 << 10)
 
 // Timeout max cycles
 #define I2C_TIMEOUT_CYCLES 100000
 
 uint8_t err;
+
+// Waits until receive RFNE status
+static pico_err_t i2c_wait_rfne(void)
+{
+    uint32_t timeout = I2C_TIMEOUT_CYCLES;
+
+    // Waits receive 1 byte of data from sensor
+    while(!(*IC_STATUS & RFNE_BIT)){
+        if(--timeout == 0)
+        {
+            return PICO_TIMEOUT_ERR_T;
+        }
+    };
+
+    return PICO_OK;
+}
 
 pico_err_t rp2040_setup_hwr(void)
 {
@@ -120,10 +142,11 @@ pico_err_t rp2040_setup_hwr(void)
     *GPIO14_CTRL = 0x03; // I2C SDA
     *GPIO15_CTRL = 0x03; // I2C SCL
 
+    // Enables Schmitt trigger to reduce noise
     *PAD_GPIO14 = PADS_SCHMITT_TRIGGER;
     *PAD_GPIO15 = PADS_SCHMITT_TRIGGER;
 
-    // Disables I2C
+    // Disables I2C for configuration
     *IC_ENABLE = 0x0;
 
     // 120 + 192 = 312 clock cycles
@@ -140,22 +163,6 @@ pico_err_t rp2040_setup_hwr(void)
     *IC_ENABLE = 0x1;
 
     return PICO_OK_T;
-}
-
-// Waits until receive RFNE status
-static pico_err_t i2c_wait_rfne(void)
-{
-    uint32_t timeout = I2C_TIMEOUT_CYCLES;
-
-    // Waits receive 1 byte of data from sensor
-    while(!(*IC_STATUS & RFNE_BIT)){
-        if(--timeout == 0)
-        {
-            return PICO_TIMEOUT_ERR_T;
-        }
-    };
-
-    return PICO_OK;
 }
 
 uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
@@ -188,7 +195,7 @@ uint8_t rp2040_i2c_read_byte(uint8_t sensor_reg_addr)
 
     //Waits until receive RFNE status
     err = i2c_wait_rfne();
-    if(err != 0)
+    if(err != PICO_OK_T)
     {
         pico_restart_i2c();
         return 0;
