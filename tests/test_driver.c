@@ -6,7 +6,6 @@
 #include "test_mpu6050.h"
 #include "driver/registers.h"
 
-
 void test_whoami_ack_is_set(void)
 {
     test_sensor_reset();

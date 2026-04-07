@@ -33,6 +33,7 @@
 
 pico_err_t setup_driver_registers(void)
 {   
+    pico_err_t err;
     uint8_t s_found = 0;
 
     // Waits until the sensor responds with the correct WHOAMI value
@@ -55,7 +56,11 @@ pico_err_t setup_driver_registers(void)
     }
 
     // Resets all bits from Power Management register (wakes up the sensor)
-    rp2040_i2c_write_byte(PWR_MGMT_1_REG, RESET_ALL_BITS);
+    err = rp2040_i2c_write_byte(PWR_MGMT_1_REG, RESET_ALL_BITS);
+    if(err != PICO_OK_T)
+    {
+        return err;
+    }
 
     // Waits for the sensor internal reset to complete
     delay_clk_cycle(MS_TO_CYCLES(10));
@@ -64,20 +69,40 @@ pico_err_t setup_driver_registers(void)
     // Bandwidth: 98Hz
     // Delay: 2.8ms
     // Fs: 1kHz
-    rp2040_i2c_write_byte(CONFIGURATION_REG, DLPF_CFG_2_BIT);
+    err = rp2040_i2c_write_byte(CONFIGURATION_REG, DLPF_CFG_2_BIT);
+    if(err != PICO_OK_T)
+    {
+        return err;
+    }
 
     // Configures gyroscope sensibility to ±500°/s
-    rp2040_i2c_write_byte(GYRO_CONFIGURATION_REG, GYRO_SENSIBILITY_500_BIT);
+    err = rp2040_i2c_write_byte(GYRO_CONFIGURATION_REG, GYRO_SENSIBILITY_500_BIT);
+    if(err != PICO_OK_T)
+    {
+        return err;
+    }
 
     // Configures accelerometer sensibility to ±4g
-    rp2040_i2c_write_byte(ACCEL_CONFIGURATION_REG, ACCEL_FULL_SCALE_RANGE_4G);
+    err = rp2040_i2c_write_byte(ACCEL_CONFIGURATION_REG, ACCEL_FULL_SCALE_RANGE_4G);
+    if(err != PICO_OK_T)
+    {
+        return err;
+    }
 
     // Enables interrupt when new sensor data is ready
-    rp2040_i2c_write_byte(INTR_ENABLE_REG, DATA_RDY_EN_BIT);
+    err = rp2040_i2c_write_byte(INTR_ENABLE_REG, DATA_RDY_EN_BIT);
+    if(err != PICO_OK_T)
+    {
+        return err;
+    }
 
     // Sets sample rate divider.
     // 1kHz / (1 + 9) = 100Hz → one sample every 10ms
-    rp2040_i2c_write_byte(SMPRT_DIV_REG, SMPRT_DIV_VALUE_BIT);
+    err = rp2040_i2c_write_byte(SMPRT_DIV_REG, SMPRT_DIV_VALUE_BIT);
+    if(err != PICO_OK_T)
+    {
+        return err;
+    }
 
     return PICO_OK_T;
 }
