@@ -44,7 +44,8 @@ add_executable(mpu_gyroscope_driver
                src/pico_hal/time.c
                src/pico_hal/error.c
                tests/mock/test_mpu6050.c
-               tests/test_registers.c)
+               tests/test_registers.c
+               tests/test_driver.c)
 
 pico_set_program_name(mpu_gyroscope_driver "mpu_gyroscope_driver")
 pico_set_program_version(mpu_gyroscope_driver "0.1")

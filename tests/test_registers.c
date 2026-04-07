@@ -1,5 +1,6 @@
 #include "test_registers.h"
 #include "string.h"
+#include "test_mpu6050.h"
 
 void test_sensor_reset(void)
 {

@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include "pico_driver/error.h"
 
-uint8_t test_registers[128];
-
 void test_sensor_reset(void);
 
 uint8_t test_i2c_r_byte(uint8_t reg_addr);

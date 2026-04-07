@@ -1,4 +1,28 @@
-int main()
+#include "test_mpu6050.h"
+#include "test_registers.h"
+#include "driver/registers.h"
+#include <stdint.h>
+
+void test_mpu_setup(void)
 {
-    return 0;
+    // WHOAMI_REG default value
+    test_registers[WHOAMI_REG] = 0x68;
+
+    // PWR_MGMT
+    test_i2c_w_byte(PWR_MGMT_1_REG, 0x00);
+
+    // CONFIGURATION
+    test_i2c_w_byte(CONFIGURATION_REG, 0x02);
+
+    // GYRO CONFIG
+    test_i2c_w_byte(GYRO_CONFIGURATION_REG, 0x08);
+
+    // ACCEL CONFIG
+    test_i2c_w_byte(ACCEL_CONFIGURATION_REG, 0x08);
+
+    // INTR_ENABLE
+    test_i2c_w_byte(INTR_ENABLE_REG, 0x01);
+
+    // SMPRT_DIV
+    test_i2c_w_byte(SMPRT_DIV_REG, 0x09);
 }
