@@ -10,4 +10,6 @@ uint8_t test_i2c_r_byte(uint8_t reg_addr);
 
 pico_err_t test_i2c_w_byte(uint8_t reg_addr, uint8_t data);
 
+void test_set_register(uint8_t reg_addr, uint8_t data);
+
 #endif

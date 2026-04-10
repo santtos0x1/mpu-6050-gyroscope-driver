@@ -81,3 +81,63 @@ void test_smprt_div_1kHz_value_is_set(void)
 
     assert(test_registers[SMPRT_DIV_REG] == expected_value);
 }
+
+void test_gyro_x_HL_registers_value(void)
+{
+    test_set_register(GYRO_REG_XOUT_H, 0x12);
+    test_set_register(GYRO_REG_XOUT_L, 0x34);
+
+    uint16_t gyro_x = test_get_gyro(GYRO_REG_XOUT_H, GYRO_REG_XOUT_L);
+
+    assert(gyro_x == 0x1234);
+}
+
+void test_gyro_y_HL_registers_value(void)
+{
+    test_set_register(GYRO_REG_YOUT_H, 0x12);
+    test_set_register(GYRO_REG_YOUT_L, 0x34);
+
+    uint16_t gyro_y = test_get_gyro(GYRO_REG_YOUT_H, GYRO_REG_YOUT_L);
+
+    assert(gyro_y == 0x1234);
+}
+
+void test_gyro_z_HL_registers_value(void)
+{
+    test_set_register(GYRO_REG_YOUT_H, 0x12);
+    test_set_register(GYRO_REG_YOUT_L, 0x34);
+
+    uint16_t gyro_z = test_get_gyro(GYRO_REG_YOUT_H, GYRO_REG_YOUT_L);
+
+    assert(gyro_z == 0x1234);
+}
+
+void test_accel_x_HL_registers_value(void)
+{
+    test_set_register(ACCEL_REG_XOUT_H, 0x12);
+    test_set_register(ACCEL_REG_XOUT_L, 0x34);
+
+    uint16_t accel_x = test_get_accel(ACCEL_REG_XOUT_H, ACCEL_REG_XOUT_L);
+
+    assert(accel_x == 0x1234);
+}
+
+void test_accel_y_HL_registers_value(void)
+{
+    test_set_register(ACCEL_REG_YOUT_H, 0x12);
+    test_set_register(ACCEL_REG_YOUT_L, 0x34);
+
+    uint16_t accel_y = test_get_accel(ACCEL_REG_YOUT_H, ACCEL_REG_YOUT_L);
+
+    assert(accel_y == 0x1234);
+}
+
+void test_accel_z_HL_registers_value(void)
+{
+    test_set_register(ACCEL_REG_ZOUT_H, 0x12);
+    test_set_register(ACCEL_REG_ZOUT_L, 0x34);
+
+    uint16_t accel_z = test_get_accel(ACCEL_REG_ZOUT_H, ACCEL_REG_ZOUT_L);
+
+    assert(accel_z == 0x1234);
+}

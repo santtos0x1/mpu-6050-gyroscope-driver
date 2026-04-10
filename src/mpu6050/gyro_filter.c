@@ -26,7 +26,7 @@ float mpu6050_get_pitch_x(raw_out_t raw_values)
         return 0;
     }
 
-    float dt = (float)(now - last_time) / SEC_DIVIDER;
+    float delta_t = (float)(now - last_time) / SEC_DIVIDER;
     last_time = now;
 
     // Convert raw gyroscope value to degrees per second
@@ -34,7 +34,7 @@ float mpu6050_get_pitch_x(raw_out_t raw_values)
     float gyro_x_conv = (float)raw_values.GYRO_XOUT_V / 65.5;
 
     // Integrate gyroscope angular velocity to estimate new angle
-    float gyro_part = angle_x + (gyro_x_conv * dt);
+    float gyro_part = angle_x + (gyro_x_conv * delta_t);
 
     // Convert raw accelerometer values to g units
     // Sensitivity for ±4g is 8192 LSB/g
@@ -67,14 +67,14 @@ float mpu6050_get_roll_y(raw_out_t raw_values)
         return 0.0f;
     }
 
-    float dt = (float)(now - last_time) / SEC_DIVIDER;
+    float delta_t = (float)(now - last_time) / SEC_DIVIDER;
     last_time = now;
 
     // Convert gyroscope raw value to °/s
     float gyro_y_conv = (float)raw_values.GYRO_YOUT_V / 65.5f;
 
     // Integrate gyro angular velocity
-    float gyro_part_y = angle_y + (gyro_y_conv * dt);
+    float gyro_part_y = angle_y + (gyro_y_conv * delta_t);
 
     // Convert accelerometer raw values to g units
     float ax = (float)raw_values.ACCEL_XOUT_V / 8192.0f;

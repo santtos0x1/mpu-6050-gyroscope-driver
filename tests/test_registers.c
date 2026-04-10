@@ -18,3 +18,8 @@ pico_err_t test_i2c_w_byte(uint8_t reg_addr, uint8_t data)
 
     return PICO_OK_T;
 }
+
+void test_set_register(uint8_t reg_addr, uint8_t data)
+{   
+    test_registers[reg_addr] = data;
+}

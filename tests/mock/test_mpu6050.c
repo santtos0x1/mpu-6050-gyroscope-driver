@@ -26,3 +26,25 @@ void test_mpu_setup(void)
     // SMPRT_DIV
     test_i2c_w_byte(SMPRT_DIV_REG, 0x09);
 }
+
+uint16_t test_get_gyro(uint8_t reg_addr_h, uint8_t reg_addr_l)
+{
+    uint8_t gyro_x_h_reg = test_registers[reg_addr_h];
+    uint8_t gyro_x_l_reg = test_registers[reg_addr_l];
+
+    uint16_t value = (gyro_x_h_reg << 8) | gyro_x_l_reg;
+    
+    return value;
+}
+
+// Accel values
+
+uint16_t test_get_accel(uint8_t reg_addr_h, uint8_t reg_addr_l)
+{
+    uint8_t accel_x_h_reg = test_registers[reg_addr_h];
+    uint8_t accel_x_l_reg = test_registers[reg_addr_l];
+
+    uint16_t value = (accel_x_h_reg << 8) | accel_x_l_reg;
+    
+    return value;
+}

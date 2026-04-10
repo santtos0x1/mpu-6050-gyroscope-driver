@@ -1,6 +1,8 @@
 #ifndef TEST_DRIVER_H
 #define TEST_DRIVER_H
 
+// Hardware setup (driver)
+
 void test_whoami_ack_is_set(void);
 
 void test_reset_pwr_mgmt1_reg_is_set(void);
@@ -14,5 +16,21 @@ void test_accel_config_full_scale_range_4g_is_set(void);
 void test_intr_enable_data_rdy_en_is_set(void);
 
 void test_smprt_div_1kHz_value_is_set(void);
+
+// Gyro values tests
+
+void test_gyro_x_HL_registers_value(void);
+
+void test_gyro_y_HL_registers_value(void);
+
+void test_gyro_z_HL_registers_value(void);
+
+// Accel values tests
+
+void test_accel_x_HL_registers_value(void);
+
+void test_accel_y_HL_registers_value(void);
+
+void test_accel_z_HL_registers_value(void);
 
 #endif
